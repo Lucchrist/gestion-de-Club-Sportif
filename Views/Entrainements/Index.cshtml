@@ -1,0 +1,54 @@
+﻿@model IEnumerable<Stage.Models.Entrainement>
+
+@{
+    ViewData["Title"] = "Liste des Entraînements";
+}
+
+<div class="container mt-5">
+    <h1 class="text-center">Gestion des Entraînements</h1>
+    <div class="d-flex justify-content-between align-items-center my-4">
+        <h4 class="mb-0">Liste des Entraînements</h4>
+        <a asp-action="Create" class="btn btn-primary">Créer un Nouvel Entraînement</a>
+    </div>
+
+    @if (Model.Any())
+    {
+        <table class="table table-striped table-bordered shadow-sm">
+            <thead class="table-dark">
+                <tr>
+                    <th>Titre</th>
+                    <th>Description</th>
+                    <th>Date et Heure</th>
+                    <th>Lieu</th>
+                    <th>Type</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>@item.Titre</td>
+                        <td>@item.Description</td>
+                        <td>@item.DateHeure.ToString("dd MMMM yyyy - HH:mm")</td>
+                        <td>@item.Lieu</td>
+                        <td>
+                            <span class="badge @(item.TypeEvenement == "Entrainement" ? "bg-success" : "bg-info")">
+                                @item.TypeEvenement
+                            </span>
+                        </td>
+                        <td>
+                            <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-warning btn-sm">Modifier</a>
+                            <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-info btn-sm">Détails</a>
+                            <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-danger btn-sm">Supprimer</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+    else
+    {
+        <div class="alert alert-info">Aucun entraînement n'a été trouvé.</div>
+    }
+</div>

@@ -12,6 +12,8 @@ namespace Stage.Data
 
         // Tables du contexte
         public DbSet<Membre> Membres { get; set; }
-       
+        public DbSet<Entrainement> Entrainements { get; set; }
+        
+
     }
 }

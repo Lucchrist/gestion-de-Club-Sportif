@@ -1,0 +1,44 @@
+﻿@model Stage.Models.Entrainement
+
+@{
+    ViewData["Title"] = "Supprimer un Entraînement";
+}
+
+<div class="container mt-5">
+    <div class="card shadow-sm border-danger">
+        <div class="card-header bg-danger text-white">
+            <h4>Supprimer l'Entraînement</h4>
+        </div>
+        <div class="card-body">
+            <h5 class="text-danger">Êtes-vous sûr de vouloir supprimer cet entraînement ?</h5>
+            <hr />
+            <dl class="row">
+                <dt class="col-sm-3 fw-bold">Titre</dt>
+                <dd class="col-sm-9">@Model.Titre</dd>
+
+                <dt class="col-sm-3 fw-bold">Description</dt>
+                <dd class="col-sm-9">@Model.Description</dd>
+
+                <dt class="col-sm-3 fw-bold">Date et Heure</dt>
+                <dd class="col-sm-9">@Model.DateHeure.ToString("dd MMMM yyyy - HH:mm")</dd>
+
+                <dt class="col-sm-3 fw-bold">Lieu</dt>
+                <dd class="col-sm-9">@Model.Lieu</dd>
+
+                <dt class="col-sm-3 fw-bold">Type d'Événement</dt>
+                <dd class="col-sm-9">
+                    <span class="badge @(Model.TypeEvenement == "Entrainement" ? "bg-success" : "bg-info")">
+                        @Model.TypeEvenement
+                    </span>
+                </dd>
+            </dl>
+        </div>
+        <div class="card-footer text-end">
+            <form asp-action="Delete" method="post">
+                <input type="hidden" asp-for="Id" />
+                <button type="submit" class="btn btn-danger">Supprimer</button>
+                <a asp-action="Index" class="btn btn-secondary ms-2">Retour à la Liste</a>
+            </form>
+        </div>
+    </div>
+</div>

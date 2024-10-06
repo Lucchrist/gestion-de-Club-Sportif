@@ -1,0 +1,44 @@
+﻿@model Stage.Models.Entrainement
+
+@{
+    ViewData["Title"] = "Détails de l'Entraînement";
+}
+
+<div class="container mt-5">
+    <h1 class="text-center">Détails de l'Entraînement</h1>
+    <div class="row justify-content-center mt-4">
+        <div class="col-md-6">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h4>@Model.Titre</h4>
+                </div>
+                <div class="card-body">
+                    <dl class="row">
+                        <dt class="col-sm-3 fw-bold">Titre</dt>
+                        <dd class="col-sm-9">@Model.Titre</dd>
+
+                        <dt class="col-sm-3 fw-bold">Description</dt>
+                        <dd class="col-sm-9">@Model.Description</dd>
+
+                        <dt class="col-sm-3 fw-bold">Date et Heure</dt>
+                        <dd class="col-sm-9">@Model.DateHeure.ToString("dd MMMM yyyy - HH:mm")</dd>
+
+                        <dt class="col-sm-3 fw-bold">Lieu</dt>
+                        <dd class="col-sm-9">@Model.Lieu</dd>
+
+                        <dt class="col-sm-3 fw-bold">Type d'Événement</dt>
+                        <dd class="col-sm-9">
+                            <span class="badge @(Model.TypeEvenement == "Entrainement" ? "bg-success" : "bg-info")">
+                                @Model.TypeEvenement
+                            </span>
+                        </dd>
+                    </dl>
+                </div>
+                <div class="card-footer text-end">
+                    <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning">Modifier</a>
+                    <a asp-action="Index" class="btn btn-secondary ms-2">Retour à la Liste</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
