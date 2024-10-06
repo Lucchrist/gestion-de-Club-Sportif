@@ -1,0 +1,80 @@
+﻿@model Stage.Models.Membre
+
+@{
+    ViewData["Title"] = "Modifier un membre";
+}
+
+<div class="container mt-5">
+    <h1 class="text-center mb-4">@ViewData["Title"]</h1>
+
+    <form asp-action="Edit" class="needs-validation" novalidate>
+        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+        <input type="hidden" asp-for="Id" />
+
+        <div class="mb-3">
+            <label asp-for="Nom" class="form-label"></label>
+            <input asp-for="Nom" class="form-control" required />
+            <div class="invalid-feedback">Le nom est requis.</div>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="Email" class="form-label"></label>
+            <input asp-for="Email" type="email" class="form-control" required />
+            <div class="invalid-feedback">Veuillez entrer une adresse email valide.</div>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="Telephone" class="form-label"></label>
+            <input asp-for="Telephone" class="form-control" required />
+            <div class="invalid-feedback">Le numéro de téléphone est requis.</div>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="DateAdhesion" class="form-label"></label>
+            <input asp-for="DateAdhesion" class="form-control" type="date" required />
+            <div class="invalid-feedback">La date d'adhésion est requise.</div>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="StatutAdhesion" class="form-label"></label>
+            <select asp-for="StatutAdhesion" class="form-select" asp-items="ViewBag.StatutAdhesionList" required></select>
+            <div class="invalid-feedback">Le statut d'adhésion est requis.</div>
+        </div>
+
+        <div class="d-grid">
+            <input type="submit" value="Enregistrer les modifications" class="btn btn-primary btn-lg" />
+        </div>
+    </form>
+
+    <div class="mt-4">
+        <a asp-action="Index" class="btn btn-secondary">Retour à la liste</a>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <script>
+        (function () {
+            'use strict'
+
+            // Fetch all the forms we want to apply custom Bootstrap validation styles to
+            var forms = document.querySelectorAll('.needs-validation')
+
+            // Loop over them and prevent submission
+            Array.prototype.slice.call(forms)
+                .forEach(function (form) {
+                    form.addEventListener('submit', function (event) {
+                        if (!form.checkValidity()) {
+                            event.preventDefault()
+                            event.stopPropagation()
+                        }
+
+                        form.classList.add('was-validated')
+                    }, false)
+                })
+        })()
+    </script>
+}

@@ -1,0 +1,55 @@
+﻿@model Stage.Models.Membre
+
+@{
+    ViewData["Title"] = "Créer un membre";
+}
+
+<h1>Créer un membre</h1>
+
+<form asp-action="Create">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+    <div class="form-group">
+        <label asp-for="Nom" class="control-label"></label>
+        <input asp-for="Nom" class="form-control" />
+        <span asp-validation-for="Nom" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Email" class="control-label"></label>
+        <input asp-for="Email" class="form-control" />
+        <span asp-validation-for="Email" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Telephone" class="control-label"></label>
+        <input asp-for="Telephone" class="form-control" />
+        <span asp-validation-for="Telephone" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="DateAdhesion" class="control-label"></label>
+        <input asp-for="DateAdhesion" class="form-control" type="date" />
+        <span asp-validation-for="DateAdhesion" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="StatutAdhesion" class="control-label"></label>
+        <select asp-for="StatutAdhesion" class="form-control" asp-items="ViewBag.StatutAdhesionList"></select>
+        <span asp-validation-for="StatutAdhesion" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <input type="submit" value="Créer" class="btn btn-primary" />
+    </div>
+</form>
+
+<div>
+    <a asp-action="Index">Retour à la liste</a>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

@@ -1,0 +1,134 @@
+html {
+  font-size: 14px;
+}
+
+@media (min-width: 768px) {
+  html {
+    font-size: 16px;
+  }
+}
+
+.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
+  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+}
+
+html {
+  position: relative;
+  min-height: 100%;
+}
+
+body {
+  margin-bottom: 60px;
+}
+/* Hero Section */
+.hero-section {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #f4f4f4;
+    padding: 40px;
+    border-radius: 10px;
+}
+
+.hero-content {
+    max-width: 50%;
+}
+
+    .hero-content h1 {
+        font-size: 3rem;
+        color: #333;
+    }
+
+    .hero-content p {
+        font-size: 1.5rem;
+        color: #777;
+    }
+
+    .hero-content .btn {
+        background-color: #007bff;
+        color: white;
+        padding: 15px 30px;
+        border-radius: 5px;
+    }
+
+.hero-image img {
+    max-width: 100%;
+    border-radius: 10px;
+}
+
+/* Training Section */
+.training-section {
+    text-align: center;
+    padding: 50px 0;
+}
+
+    .training-section h2 {
+        font-size: 2.5rem;
+        margin-bottom: 30px;
+    }
+
+    .training-section img {
+        border-radius: 10px;
+        margin-bottom: 15px;
+    }
+
+    .training-section h3 {
+        font-size: 1.5rem;
+        color: #333;
+    }
+
+    .training-section p {
+        color: #777;
+    }
+
+/* Statistics Section */
+.stats-section {
+    padding: 50px 0;
+    background-color: #f4f4f4;
+}
+
+    .stats-section h2 {
+        font-size: 2.5rem;
+        margin-bottom: 30px;
+        text-align: center;
+    }
+
+    .stats-section img {
+        max-width: 100%;
+        border-radius: 10px;
+    }
+
+    .stats-section h3 {
+        font-size: 2rem;
+        color: #333;
+    }
+
+    .stats-section ul {
+        list-style: none;
+        padding: 0;
+    }
+
+        .stats-section ul li {
+            font-size: 1.2rem;
+            color: #555;
+            margin-bottom: 10px;
+        }
+.fun-heading {
+    font-family: 'Arial', sans-serif;
+    font-weight: bold;
+    font-size: 3em;
+    color: #0056b3; /* Couleur similaire à celle de MonClubSportif */
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2); /* Ajout d'une ombre légère */
+    letter-spacing: 2px;
+    padding: 20px;
+    text-align: center;
+    background-color: #e9f1fc;
+    border-radius: 10px;
+    display: inline-block;
+}
+
+    .fun-heading:hover {
+        color: #1f87ff;
+        text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.4);
+        transition: all 0.3s ease-in-out;
+    }
