@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 namespace Stage.Models
@@ -22,7 +23,12 @@ namespace Stage.Models
 
         [Required(ErrorMessage = "Le statut d'adhésion est obligatoire.")]
         public string StatutAdhesion { get; set; }
-    }
 
-    
+        // Collection pour les cotisations du membre
+        public List<Cotisation> Cotisations { get; set; } = new List<Cotisation>();
+
+        public List<Participation> Participations { get; set; } = new List<Participation>();
+        public List<Statistique> Statistiques { get; set; } = new List<Statistique>(); 
+
+    }
 }

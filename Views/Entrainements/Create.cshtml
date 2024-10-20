@@ -1,67 +1,68 @@
 ﻿@model Stage.Models.Entrainement
 
 @{
-    ViewData["Title"] = "Créer un Entraînement";
+    ViewData["Title"] = "Créer un Nouvel Événement";
 }
 
 <div class="container mt-5">
-    <h1 class="text-center">Créer un Entraînement</h1>
-    <div class="row justify-content-center mt-4">
-        <div class="col-md-6">
-            <div class="card shadow-sm">
-                <div class="card-header bg-primary text-white">
-                    <h4>Nouvel Entraînement</h4>
+    <div class="card shadow-lg" style="animation: slideIn 1s;">
+        <div class="card-body">
+            <h2 class="card-title text-center">Créer un Nouvel Événement</h2>
+            <form asp-action="Create" method="post">
+                <div class="form-group">
+                    <label for="Titre">Titre de l'Événement</label>
+                    <input type="text" class="form-control" id="Titre" name="Titre" placeholder="Entrez le titre" />
                 </div>
-                <div class="card-body">
-                    <form asp-action="Create">
-                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
-                        <div class="form-group mb-3">
-                            <label asp-for="Titre" class="form-label"></label>
-                            <input asp-for="Titre" class="form-control" />
-                            <span asp-validation-for="Titre" class="text-danger"></span>
-                        </div>
-
-                        <div class="form-group mb-3">
-                            <label asp-for="Description" class="form-label"></label>
-                            <input asp-for="Description" class="form-control" />
-                            <span asp-validation-for="Description" class="text-danger"></span>
-                        </div>
-
-                        <div class="form-group mb-3">
-                            <label asp-for="DateHeure" class="form-label"></label>
-                            <input asp-for="DateHeure" class="form-control" type="datetime-local" />
-                            <span asp-validation-for="DateHeure" class="text-danger"></span>
-                        </div>
-
-                        <div class="form-group mb-3">
-                            <label asp-for="Lieu" class="form-label"></label>
-                            <input asp-for="Lieu" class="form-control" />
-                            <span asp-validation-for="Lieu" class="text-danger"></span>
-                        </div>
-
-                        <div class="form-group mb-3">
-                            <label asp-for="TypeEvenement" class="form-label">Type d'Événement</label>
-                            <select asp-for="TypeEvenement" class="form-select">
-                                <option value="Entrainement">Entraînement</option>
-                                <option value="Competition">Compétition</option>
-                            </select>
-                            <span asp-validation-for="TypeEvenement" class="text-danger"></span>
-                        </div>
-
-                        <div class="form-group text-end">
-                            <input type="submit" value="Créer" class="btn btn-primary" />
-                            <a asp-action="Index" class="btn btn-secondary ms-2">Retour à la Liste</a>
-                        </div>
-                    </form>
+                <div class="form-group">
+                    <label for="Description">Description</label>
+                    <textarea class="form-control" id="Description" name="Description" rows="3" placeholder="Entrez la description"></textarea>
                 </div>
-            </div>
+
+                <div class="form-group">
+                    <label for="DateDebut">Date de Début</label>
+                    <input type="date" class="form-control" id="DateDebut" name="DateDebut" />
+                </div>
+
+                <div class="form-group">
+                    <label for="DateFin">Date de Fin</label>
+                    <input type="date" class="form-control" id="DateFin" name="DateFin" />
+                </div>
+
+                <div class="form-group">
+                    <label for="HeureDebut">Heure de Début</label>
+                    <input type="time" class="form-control" id="HeureDebut" name="HeureDebut" />
+                </div>
+
+                <div class="form-group">
+                    <label for="HeureFin">Heure de Fin</label>
+                    <input type="time" class="form-control" id="HeureFin" name="HeureFin" />
+                </div>
+
+                <div class="form-group">
+                    <label for="Lieu">Lieu</label>
+                    <input type="text" class="form-control" id="Lieu" name="Lieu" placeholder="Entrez le lieu" />
+                </div>
+
+                <div class="form-group">
+                    <label for="TypeEvenement">Type d'Événement</label>
+                    <select id="TypeEvenement" class="form-control" name="TypeEvenement">
+                        <option>Entraînement</option>
+                        <option>Compétition</option>
+                    </select>
+                </div>
+
+                <div class="text-center mt-4">
+                    <input type="submit" value="Créer" class="btn btn-primary" />
+                    <a href="@Url.Action("Index")" class="btn btn-secondary">
+                        <i class="fas fa-arrow-left"></i> Retour à la liste
+                    </a>
+                </div>
+            </form>
         </div>
     </div>
 </div>
 
 @section Scripts {
-    @{
-        await Html.RenderPartialAsync("_ValidationScriptsPartial");
-    }
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
 }

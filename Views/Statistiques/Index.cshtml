@@ -1,0 +1,46 @@
+﻿@model IEnumerable<Stage.Models.Statistique>
+
+<div class="container mt-4">
+    <h2 class="display-6 text-center mb-4">Statistiques des Participations</h2>
+
+    <div class="d-flex justify-content-center mb-3">
+        <a href="@Url.Action("Index", new { periode = "semaine" })" class="btn btn-primary mx-1">Semaine</a>
+        <a href="@Url.Action("Index", new { periode = "mois" })" class="btn btn-primary mx-1">Mois</a>
+        <a href="@Url.Action("Index", new { periode = "annee" })" class="btn btn-primary mx-1">Année</a>
+        <a href="@Url.Action("Index", new { periode = "tout" })" class="btn btn-primary mx-1">Tout voir</a>
+    </div>
+
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Entraînement</th>
+                <th>Type d'Événement</th>
+                <th>Date</th>
+                <th>Statistiques</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var stat in Model)
+            {
+                <tr>
+                    <td>@stat.EntrainementTitre</td>
+                    <td>@stat.TypeEvenement</td>
+                    <td>@stat.DateEntrainement.ToString("yyyy-MM-dd")</td>
+                    <td>
+                        Présents: @stat.MembresPresents / Absent: @stat.MembresAbsents / Excusés: @stat.MembresExcuses
+                    </td>
+                    <td>
+                        <a href="@Url.Action("Details", "Statistiques", new { id = stat.EntrainementId })" class="btn btn-info">Voir Détails</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <!-- Boutons d'exportation -->
+    <div class="d-flex justify-content-center mt-4">
+        <a href="@Url.Action("ExportToCSV")" class="btn btn-success mx-2">Exporter en CSV</a>
+        
+    </div>
+</div>

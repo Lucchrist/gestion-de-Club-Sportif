@@ -1,4 +1,5 @@
-﻿@{
+﻿@model List<Stage.Models.Statistique>
+@{
     ViewData["Title"] = "Accueil";
 }
 
@@ -44,12 +45,34 @@
             <img src="https://cdn.pixabay.com/photo/2018/02/27/17/40/graph-3186077_1280.png" class="img-fluid" alt="Statistics">
         </div>
         <div class="col-md-6">
-            <h3>Statistiques Clés</h3>
-            <ul>
-                <li>Nombre total de membres : 250</li>
-                <li>Sessions actives cette semaine : 15</li>
-                <li>Performance moyenne des équipes : 85%</li>
-            </ul>
+           
+            <div class="container mt-5">
+                <h2 class="display-6 text-center mb-4">Statistiques Récentes</h2>
+
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Entraînement</th>
+                            <th>Date</th>
+                            <th>Membres Présents</th>
+                            <th>Membres Absents</th>
+                            <th>Membres Excusés</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var stat in Model)
+                        {
+                            <tr>
+                                <td>@stat.EntrainementTitre</td>
+                                <td>@stat.DateEntrainement.ToString("yyyy-MM-dd")</td>
+                                <td>@stat.MembresPresents</td>
+                                <td>@stat.MembresAbsents</td>
+                                <td>@stat.MembresExcuses</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 </div>

@@ -1,0 +1,74 @@
+﻿@model Stage.Models.Statistique
+
+@{
+    ViewData["Title"] = "Détails des Statistiques de l'Entraînement";
+}
+
+<div class="container mt-5">
+    <h2 class="display-6 text-center mb-4">Statistiques de l'Entraînement @Model.EntrainementTitre (@Model.DateEntrainement.ToString("yyyy-MM-dd"))</h2>
+
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card text-white bg-success mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">Membres Présents</h5>
+                    <p class="card-text">@Model.MembresPresents</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card text-white bg-danger mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">Membres Absents</h5>
+                    <p class="card-text">@Model.MembresAbsents</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card text-white bg-warning mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">Membres Excusés</h5>
+                    <p class="card-text">@Model.MembresExcuses</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mt-5">
+        <div class="col-md-6">
+            <h4>Pourcentage de Présence</h4>
+            <div class="progress">
+                <div class="progress-bar bg-success" role="progressbar" style="width: @Model.PourcentagePresence%" aria-valuenow="@Model.PourcentagePresence" aria-valuemin="0" aria-valuemax="100">@Model.PourcentagePresence %</div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <h4>Pourcentage d'Absence</h4>
+            <div class="progress">
+                <div class="progress-bar bg-danger" role="progressbar" style="width: @Model.PourcentageAbsence%" aria-valuenow="@Model.PourcentageAbsence" aria-valuemin="0" aria-valuemax="100">@Model.PourcentageAbsence %</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Bouton de redirection vers l'Index -->
+<div class="mt-5 d-flex justify-content-center">
+    <a href="@Url.Action("Index", "Statistiques")" class="btn btn-secondary">Retour à la Liste</a>
+</div>
+
+<canvas id="participationChart" width="400" height="400"></canvas>
+
+<script>
+    var ctx = document.getElementById('participationChart').getContext('2d');
+    var participationChart = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            labels: ['Présents', 'Absents', 'Excusés'],
+            datasets: [{
+                label: 'Participation',
+                data: [@Model.MembresPresents, @Model.MembresAbsents, @Model.MembresExcuses],
+                backgroundColor: ['#28a745', '#dc3545', '#ffc107'],
+                borderWidth: 1
+            }]
+        }
+    });
+</script>

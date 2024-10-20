@@ -1,0 +1,70 @@
+﻿@model Stage.Models.Participation
+
+@{
+    ViewData["Title"] = "Create Participation";
+}
+
+<div class="container mt-5">
+    <h2 class="display-6 text-center mb-4">Create Participation</h2>
+
+    <form asp-action="Create" method="post" class="shadow-lg p-4 bg-white rounded">
+        <!-- Sélection du membre -->
+        <div class="form-group mb-4">
+            <label for="membreId" class="form-label">Select Membre</label>
+            <select id="membreId" name="membreId" class="form-control form-select">
+                <option disabled selected>Select a member</option>
+                @foreach (var membre in ViewData["Membres"] as List<Stage.Models.Membre>)
+                {
+                    <option value="@membre.Id">@membre.Nom @membre.Nom</option>
+                }
+            </select>
+        </div>
+
+        <!-- Sélection des entraînements -->
+        <div class="form-group mb-4">
+            <label class="form-label">Select Entrainements</label>
+            @foreach (var entrainement in ViewData["Entrainements"] as List<Stage.Models.Entrainement>)
+            {
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" name="entrainementIds" value="@entrainement.Id" id="entrainement@entrainement.Id" />
+                            <label class="form-check-label" for="entrainement@entrainement.Id">
+                                <strong>@entrainement.Titre</strong>
+                            </label>
+                        </div>
+                        <p class="mb-1">
+                            <span class="fw-bold">Date:</span> @entrainement.DateDebut.ToString("yyyy-MM-dd") - @entrainement.DateFin.ToString("yyyy-MM-dd")
+                        </p>
+                        <p class="mb-1">
+                            <span class="fw-bold">Heure:</span> @entrainement.HeureDebut.ToString(@"hh\:mm") - @entrainement.HeureFin.ToString(@"hh\:mm")
+                        </p>
+                        <p class="mb-1">
+                            <span class="fw-bold">Lieu:</span> @entrainement.Lieu
+                        </p>
+                        <p class="mb-1">
+                            <span class="fw-bold">Type d'Entrainement:</span> @entrainement.TypeEvenement
+                        </p>
+                    </div>
+                </div>
+            }
+        </div>
+
+        <!-- Sélection du statut de la participation -->
+        <div class="form-group mb-4">
+            <label for="statut" class="form-label">Select Statut</label>
+            <select id="statut" name="statut" class="form-control form-select">
+                <option value="Présent">Présent</option>
+                <option value="Absent">Absent</option>
+                <option value="Excusé">Excusé</option>
+            </select>
+        </div>
+
+        <!-- Bouton de soumission -->
+        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+            <button type="submit" class="btn btn-lg btn-primary shadow-sm">
+                <i class="fas fa-check-circle me-2"></i> Submit
+            </button>
+        </div>
+    </form>
+</div>

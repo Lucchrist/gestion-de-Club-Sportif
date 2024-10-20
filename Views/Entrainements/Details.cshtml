@@ -1,44 +1,45 @@
 ﻿@model Stage.Models.Entrainement
 
 @{
-    ViewData["Title"] = "Détails de l'Entraînement";
+    ViewData["Title"] = "Détails de l'événement";
 }
 
 <div class="container mt-5">
-    <h1 class="text-center">Détails de l'Entraînement</h1>
-    <div class="row justify-content-center mt-4">
-        <div class="col-md-6">
-            <div class="card shadow-sm">
-                <div class="card-header bg-primary text-white">
-                    <h4>@Model.Titre</h4>
-                </div>
-                <div class="card-body">
-                    <dl class="row">
-                        <dt class="col-sm-3 fw-bold">Titre</dt>
-                        <dd class="col-sm-9">@Model.Titre</dd>
+    <div class="card shadow-lg" style="animation: fadeIn 1s;">
+        <div class="card-body">
+            <h2 class="card-title text-center">@Model.Titre</h2>
+            <p class="card-text text-center text-muted">@Model.Description</p>
 
-                        <dt class="col-sm-3 fw-bold">Description</dt>
-                        <dd class="col-sm-9">@Model.Description</dd>
+          
 
-                        <dt class="col-sm-3 fw-bold">Date et Heure</dt>
-                        <dd class="col-sm-9">@Model.DateHeure.ToString("dd MMMM yyyy - HH:mm")</dd>
 
-                        <dt class="col-sm-3 fw-bold">Lieu</dt>
-                        <dd class="col-sm-9">@Model.Lieu</dd>
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item">
+                    <strong>Date : </strong> Du @Model.DateDebut.ToString("dd MMM yyyy") au @Model.DateFin.ToString("dd MMM yyyy")
+                </li>
+                <li class="list-group-item">
+                    <strong>Heures : </strong> De @Model.HeureDebut.ToString(@"hh\:mm") à @Model.HeureFin.ToString(@"hh\:mm")
+                </li>
+                <li class="list-group-item">
+                    <strong>Lieu : </strong> @Model.Lieu
+                </li>
+                <li class="list-group-item">
+                    <strong>Type d'Événement : </strong> @Model.TypeEvenement
+                </li>
+            </ul>
 
-                        <dt class="col-sm-3 fw-bold">Type d'Événement</dt>
-                        <dd class="col-sm-9">
-                            <span class="badge @(Model.TypeEvenement == "Entrainement" ? "bg-success" : "bg-info")">
-                                @Model.TypeEvenement
-                            </span>
-                        </dd>
-                    </dl>
-                </div>
-                <div class="card-footer text-end">
-                    <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning">Modifier</a>
-                    <a asp-action="Index" class="btn btn-secondary ms-2">Retour à la Liste</a>
-                </div>
+            <div class="text-center mt-4">
+                <a href="@Url.Action("Edit", new { id = Model.Id })" class="btn btn-warning">
+                    <i class="fas fa-edit"></i> Modifier
+                </a>
+                <a href="@Url.Action("Index")" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left"></i> Retour à la liste
+                </a>
             </div>
         </div>
     </div>
 </div>
+
+@section Scripts {
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+}

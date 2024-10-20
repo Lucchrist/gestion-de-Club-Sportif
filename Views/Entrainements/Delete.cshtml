@@ -1,44 +1,43 @@
 ﻿@model Stage.Models.Entrainement
 
 @{
-    ViewData["Title"] = "Supprimer un Entraînement";
+    ViewData["Title"] = "Supprimer l'Événement";
 }
 
 <div class="container mt-5">
-    <div class="card shadow-sm border-danger">
-        <div class="card-header bg-danger text-white">
-            <h4>Supprimer l'Entraînement</h4>
-        </div>
-        <div class="card-body">
-            <h5 class="text-danger">Êtes-vous sûr de vouloir supprimer cet entraînement ?</h5>
-            <hr />
-            <dl class="row">
-                <dt class="col-sm-3 fw-bold">Titre</dt>
-                <dd class="col-sm-9">@Model.Titre</dd>
+    <div class="card shadow-lg" style="animation: fadeIn 1s;">
+        <div class="card-body text-center">
+            <h2 class="card-title text-danger">Êtes-vous sûr de vouloir supprimer cet événement ?</h2>
+            <p class="card-text text-muted">Cette action est irréversible.</p>
 
-                <dt class="col-sm-3 fw-bold">Description</dt>
-                <dd class="col-sm-9">@Model.Description</dd>
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item">
+                    <strong>Titre : </strong> @Model.Titre
+                </li>
+                <li class="list-group-item">
+                    <strong>Date : </strong> Du @Model.DateDebut.ToString("dd MMM yyyy") au @Model.DateFin.ToString("dd MMM yyyy")
+                </li>
+                <li class="list-group-item">
+                    <strong>Lieu : </strong> @Model.Lieu
+                </li>
+            </ul>
 
-                <dt class="col-sm-3 fw-bold">Date et Heure</dt>
-                <dd class="col-sm-9">@Model.DateHeure.ToString("dd MMMM yyyy - HH:mm")</dd>
-
-                <dt class="col-sm-3 fw-bold">Lieu</dt>
-                <dd class="col-sm-9">@Model.Lieu</dd>
-
-                <dt class="col-sm-3 fw-bold">Type d'Événement</dt>
-                <dd class="col-sm-9">
-                    <span class="badge @(Model.TypeEvenement == "Entrainement" ? "bg-success" : "bg-info")">
-                        @Model.TypeEvenement
-                    </span>
-                </dd>
-            </dl>
-        </div>
-        <div class="card-footer text-end">
-            <form asp-action="Delete" method="post">
-                <input type="hidden" asp-for="Id" />
-                <button type="submit" class="btn btn-danger">Supprimer</button>
-                <a asp-action="Index" class="btn btn-secondary ms-2">Retour à la Liste</a>
-            </form>
+            <div class="mt-4">
+                <!-- Bouton pour confirmer la suppression -->
+                <form asp-action="Delete" method="post">
+                    <input type="hidden" asp-for="Id" />
+                    <button type="submit" class="btn btn-danger">
+                        <i class="fas fa-trash-alt"></i> Supprimer
+                    </button>
+                    <a href="@Url.Action("Index")" class="btn btn-secondary">
+                        <i class="fas fa-arrow-left"></i> Annuler
+                    </a>
+                </form>
+            </div>
         </div>
     </div>
 </div>
+
+@section Scripts {
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+}
