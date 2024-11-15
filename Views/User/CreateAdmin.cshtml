@@ -1,0 +1,25 @@
+﻿@model Stage.Models.User
+
+@{
+    ViewData["Title"] = "Créer un Administrateur";
+}
+
+<div class="container mt-5">
+    <h2 class="text-center">Créer un Administrateur</h2>
+
+    <form asp-action="CreateAdmin" method="post" class="mt-4">
+        <div class="form-group">
+            <label for="Email">Email</label>
+            <input type="email" class="form-control" id="Email" asp-for="Email" placeholder="Saisissez l'adresse email" required />
+        </div>
+        <div class="form-group mt-3">
+            <label for="Password">Mot de Passe</label>
+            <input type="password" class="form-control" id="Password" asp-for="Password" placeholder="Saisissez un mot de passe sécurisé" required />
+        </div>
+        <div class="form-group mt-3">
+            <label for="Role">Rôle</label>
+            <input type="text" class="form-control" id="Role" asp-for="Role" placeholder="Saisissez un rôle (ex: Admin)" required />
+        </div>
+        <button type="submit" class="btn btn-primary mt-3">Créer l'Administrateur</button>
+    </form>
+</div>

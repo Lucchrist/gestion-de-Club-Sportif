@@ -1,5 +1,5 @@
-﻿using Stage.Models;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
+using Stage.Models;
 
 namespace Stage.Data
 {
@@ -14,11 +14,20 @@ namespace Stage.Data
         public DbSet<Membre> Membres { get; set; }
         public DbSet<Entrainement> Entrainements { get; set; }
         public DbSet<Participation> Participations { get; set; }
-        public DbSet<Cotisation> Cotisations { get; set; } // Ajout de la table Cotisations
-        public DbSet<Statistique> Statistiques { get; set; } // Ajout pour la table des statistiques
+        public DbSet<Statistique> Statistiques { get; set; }
+        public DbSet<User> Users { get; set; }
+        
+        public DbSet<Abonnement> Abonnements { get; set; }
+
+        public DbSet<Adhesion> Adhesions { get; set; }
+
+
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            // Configuration de la clé primaire pour User
+            modelBuilder.Entity<User>().HasKey(a => a.Id);
+
             // Relation entre Membre et Participation
             modelBuilder.Entity<Participation>()
                 .HasOne(p => p.Membre)
@@ -32,10 +41,6 @@ namespace Stage.Data
                 .WithMany(e => e.Participations)
                 .HasForeignKey(p => p.EntrainementId);
 
-            // Configuration de la précision du montant dans Cotisation
-            modelBuilder.Entity<Cotisation>()
-                .Property(c => c.Montant)
-                .HasColumnType("decimal(18,2)");
 
             // Ajout de la configuration pour la table Statistiques (exemple)
             modelBuilder.Entity<Statistique>()

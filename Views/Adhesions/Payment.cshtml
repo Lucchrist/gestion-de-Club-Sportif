@@ -1,0 +1,44 @@
+﻿@model Stage.Models.Adhesion
+
+<h2>Paiement pour l'adhésion</h2>
+
+<div id="payment-section">
+    <p>Montant: @Model.Montant $</p>
+    <button id="connect-reader">Connecter le lecteur</button>
+    <button id="confirm-payment">Confirmer le Paiement</button>
+</div>
+
+@section Scripts {
+    <script src="https://js.stripe.com/v3/"></script>
+    <script>
+        var stripe = Stripe('@ViewBag.PublicKey');
+        var elements = stripe.elements();
+        var clientSecret = '@ViewBag.ClientSecret';
+        var connectionToken = '@ViewBag.ConnectionToken';
+
+        document.getElementById("connect-reader").addEventListener("click", async function () {
+            // Connecter au lecteur de carte
+            try {
+                const reader = await stripe.terminal.connectReader(connectionToken);
+                console.log("Lecteur connecté avec succès", reader);
+            } catch (error) {
+                console.error("Erreur de connexion au lecteur", error);
+            }
+        });
+
+        document.getElementById("confirm-payment").addEventListener("click", async function () {
+            try {
+                const result = await stripe.confirmCardPayment(clientSecret);
+                if (result.error) {
+                    console.error("Erreur de paiement", result.error);
+                } else {
+                    alert("Paiement réussi !");
+                    // Redirection après paiement réussi
+                    window.location.href = "/Adhesions/Index";
+                }
+            } catch (error) {
+                console.error("Erreur lors de la confirmation du paiement", error);
+            }
+        });
+    </script>
+}

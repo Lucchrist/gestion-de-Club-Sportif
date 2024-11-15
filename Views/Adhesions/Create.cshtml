@@ -1,0 +1,27 @@
+﻿@model Stage.Models.Adhesion
+
+@{
+    ViewData["Title"] = "Créer une Adhésion";
+}
+
+<div class="container mt-5">
+    <h2>Créer une Adhésion</h2>
+    <form asp-action="Create" method="post">
+        <div class="form-group">
+            <label asp-for="MembreId" class="control-label">Membre</label>
+            <select asp-for="MembreId" class="form-select" asp-items="ViewBag.MembreId"></select>
+        </div>
+        <div class="form-group">
+            <label asp-for="TypeAbonnement" class="control-label">Type d'Abonnement</label>
+            <select asp-for="TypeAbonnement" class="form-select">
+                <option value="Mensuel">Mensuel - 34$</option>
+                <option value="Annuel">Annuel - 360$</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label asp-for="Montant" class="control-label"></label>
+            <input asp-for="Montant" class="form-control" readonly />
+        </div>
+        <button type="submit" class="btn btn-primary mt-3">Créer et Payer</button>
+    </form>
+</div>

@@ -25,10 +25,11 @@ namespace Stage.Models
         public string StatutAdhesion { get; set; }
 
         // Collection pour les cotisations du membre
-        public List<Cotisation> Cotisations { get; set; } = new List<Cotisation>();
+        public List<Abonnement> Abonnements { get; set; } = new List<Abonnement>();
 
         public List<Participation> Participations { get; set; } = new List<Participation>();
         public List<Statistique> Statistiques { get; set; } = new List<Statistique>(); 
+           public List<Adhesion> Adhesions { get; set; } = new List<Adhesion>();
 
     }
 }

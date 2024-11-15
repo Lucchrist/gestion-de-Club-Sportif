@@ -1,0 +1,33 @@
+﻿@model IEnumerable<Stage.Models.Abonnement>
+
+<h2>Liste des Abonnements</h2>
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Membre</th>
+            <th>Type</th>
+            <th>Date de début</th>
+            <th>Date de fin</th>
+            <th>Statut</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var abonnement in Model)
+        {
+            <tr>
+                <td>@abonnement.Membre.Email</td>
+                <td>@abonnement.TypeAbonnement</td>
+                <td>@abonnement.DateDebut.ToShortDateString()</td>
+                <td>@abonnement.DateFin?.ToShortDateString()</td>
+                <td>@abonnement.Statut</td>
+                <td>
+                    <a href="@Url.Action("Edit", new { id = abonnement.Id })" class="btn btn-primary">Modifier</a>
+                    <a href="@Url.Action("Details", new { id = abonnement.Id })" class="btn btn-info">Détails</a>
+                    <a href="@Url.Action("Delete", new { id = abonnement.Id })" class="btn btn-danger">Supprimer</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+<a href="@Url.Action("Create")" class="btn btn-success">Ajouter un Abonnement</a>

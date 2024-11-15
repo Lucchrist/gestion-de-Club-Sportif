@@ -1,0 +1,22 @@
+﻿@model Stage.Models.Abonnement
+@{
+    ViewData["Title"] = "Créer un Abonnement";
+}
+
+<h2>Créer un Abonnement</h2>
+
+<form asp-action="Create" method="post">
+    <div class="form-group">
+        <label asp-for="MembreId"></label>
+        <select asp-for="MembreId" asp-items="ViewBag.MembreId" class="form-control"></select>
+    </div>
+    <div class="form-group">
+        <label asp-for="TypeAbonnement"></label>
+        <input asp-for="TypeAbonnement" class="form-control" />
+    </div>
+    <div class="form-group">
+        <label asp-for="Montant"></label>
+        <input asp-for="Montant" class="form-control" />
+    </div>
+    <button type="submit" class="btn btn-primary">Procéder au Paiement</button>
+</form>

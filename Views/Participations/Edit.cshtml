@@ -1,36 +1,25 @@
-﻿@model Stage.Models.Participation
+﻿
+@model Stage.Models.Participation
 
-@{
-    ViewData["Title"] = "Modifier la Présence";
-}
+<h2>Modifier le statut de participation</h2>
 
-<div class="container mt-5">
-    <h2 class="display-6 text-center mb-4">Modifier la Présence du Membre</h2>
+<form asp-action="ModifierStatut" method="post" class="container mt-5">
+    <input type="hidden" name="participationId" value="@Model.Id" />
 
-    <form asp-action="Edit" method="post" class="shadow-lg p-4 bg-white rounded">
-        <!-- Champ caché pour l'ID -->
-        <input type="hidden" asp-for="Id" />
+    <div class="form-group">
+        <label>Nom du membre</label>
+        <input type="text" readonly value="@Model.Membre.Nom" class="form-control" />
+    </div>
 
-        <!-- Affichage du nom du membre (readonly) -->
-        <div class="form-group mb-4">
-            <label for="membreNom" class="form-label">Nom du Membre</label>
-            <input id="membreNom" class="form-control" value="@Model.Membre?.Nom" readonly />
-        </div>
+    <div class="form-group mb-4">
+        <label for="StatutParticipation" class="form-label">Sélectionner le Statut</label>
+        <select id="StatutParticipation" asp-for="StatutParticipation" class="form-control">
+            <option value="Présent">Présent</option>
+            <option value="Absent">Absent</option>
+            <option value="Excusé">Excusé</option>
+        </select>
+    </div>
 
-        <!-- Sélection du statut de la participation -->
-        <div class="form-group mb-4">
-            <label for="StatutParticipation" class="form-label">Sélectionner le Statut</label>
-            <select id="StatutParticipation" asp-for="StatutParticipation" class="form-control">
-                <option value="Présent">Présent</option>
-                <option value="Absent">Absent</option>
-                <option value="Excusé">Excusé</option>
-            </select>
-        </div>
+    <button type="submit" class="btn btn-primary">Modifier</button>
+</form>
 
-        <!-- Boutons de soumission et annulation -->
-        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-            <button type="submit" class="btn btn-lg btn-primary shadow-sm">Modifier</button>
-            <a asp-action="Index" class="btn btn-lg btn-secondary shadow-sm">Annuler</a>
-        </div>
-    </form>
-</div>

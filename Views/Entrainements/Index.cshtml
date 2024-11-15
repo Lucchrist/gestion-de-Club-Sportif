@@ -7,10 +7,13 @@
 <div class="container mt-5">
     <h1 class="text-center" style="font-weight: 600; color: #333;">Entraînements & Compétitions</h1>
 
-    <!-- Bouton d'ajout -->
-    <div class="d-flex justify-content-end mb-4">
+    <!-- Boutons d'ajout et de bascule vers le calendrier -->
+    <div class="d-flex justify-content-between mb-4">
         <a class="btn btn-lg btn-primary shadow-sm" asp-action="Create">
             <i class="fas fa-plus-circle"></i> Ajouter
+        </a>
+        <a class="btn btn-lg btn-secondary shadow-sm" asp-action="Calendar">
+            <i class="fas fa-calendar-alt"></i> Vue Calendrier
         </a>
     </div>
 
@@ -73,3 +76,6 @@
 @section Scripts {
     <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
 }
+
+
+                                    

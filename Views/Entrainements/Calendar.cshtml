@@ -1,0 +1,118 @@
+﻿@model IEnumerable<Stage.Models.Entrainement>
+@using System.Globalization
+
+@{
+    ViewData["Title"] = "Vue Calendrier";
+    var selectedYear = ViewBag.SelectedYear ?? DateTime.Now.Year;
+    var selectedMonth = ViewBag.SelectedMonth ?? DateTime.Now.Month;
+    var daysInMonth = DateTime.DaysInMonth(selectedYear, selectedMonth);
+}
+
+<div class="container mt-5">
+    <h2 class="text-center">Agenda - @CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(selectedMonth) @selectedYear</h2>
+
+    <!-- Boutons pour changer de mois et d'année -->
+    <div class="month-year-navigation mb-3 d-flex justify-content-between">
+        <a href="@Url.Action("Calendar", new { year = selectedYear, month = selectedMonth - 1 < 1 ? 12 : selectedMonth - 1, adjustYear = selectedMonth - 1 < 1 ? selectedYear - 1 : selectedYear })" class="btn btn-sm btn-primary">◀ Mois Précédent</a>
+        <span class="current-month-year">@CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(selectedMonth) @selectedYear</span>
+        <a href="@Url.Action("Calendar", new { year = selectedYear, month = selectedMonth + 1 > 12 ? 1 : selectedMonth + 1, adjustYear = selectedMonth + 1 > 12 ? selectedYear + 1 : selectedYear })" class="btn btn-sm btn-primary">Mois Suivant ▶</a>
+    </div>
+
+    <!-- Grille du calendrier -->
+    <div class="compact-calendar">
+        <div class="days-grid">
+            <div class="day-header">Lun</div>
+            <div class="day-header">Mar</div>
+            <div class="day-header">Mer</div>
+            <div class="day-header">Jeu</div>
+            <div class="day-header">Ven</div>
+            <div class="day-header">Sam</div>
+            <div class="day-header">Dim</div>
+
+            <!-- Calcul pour le premier jour du mois -->
+            @{
+                var firstDayOfMonth = new DateTime(selectedYear, selectedMonth, 1);
+                var dayOfWeek = (int)firstDayOfMonth.DayOfWeek;
+                dayOfWeek = dayOfWeek == 0 ? 7 : dayOfWeek; // Ajuster dimanche = 7
+            }
+
+            <!-- Remplissage des jours avant le début du mois -->
+            @for (int emptyDay = 1; emptyDay < dayOfWeek; emptyDay++)
+            {
+                <div class="day-box empty"></div>
+            }
+
+            <!-- Affichage des jours du mois avec événements -->
+            @for (int day = 1; day <= daysInMonth; day++)
+            {
+                var currentDate = new DateTime(selectedYear, selectedMonth, day);
+                var eventsForDay = Model.Where(e => e.DateDebut.Date == currentDate.Date);
+
+                <div class="day-box" onclick="showEventForm('@currentDate.ToString("yyyy-MM-dd")')">
+                    <span class="date-number">@day</span>
+
+                    <!-- Affichage des événements avec type pour chaque jour -->
+                    @foreach (var item in eventsForDay)
+                    {
+                        <div class="event-small">
+                            <a href="@Url.Action("Details", "Entrainements", new { id = item.Id })">
+                                <strong>@item.TypeEvenement:</strong> @item.Titre
+                            </a>
+                        </div>
+                    }
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+<!-- Formulaire d'ajout d'événement (caché par défaut) -->
+<div id="eventForm" class="event-form-modal" style="display:none;">
+    <div class="event-form-content">
+        <span class="close-btn" onclick="hideEventForm()">&times;</span>
+        <h3>Ajouter un événement</h3>
+        <form asp-action="AddEvent" method="post">
+            <input type="hidden" id="eventDate" name="DateDebut" />
+            <div class="form-group">
+                <label for="Titre">Titre</label>
+                <input type="text" class="form-control" id="Titre" name="Titre" required />
+            </div>
+            <div class="form-group">
+                <label for="Description">Description</label>
+                <textarea class="form-control" id="Description" name="Description" required></textarea>
+            </div>
+            <div class="form-group">
+                <label for="TypeEvenement">Type d'Événement</label>
+                <input type="text" class="form-control" id="TypeEvenement" name="TypeEvenement" required />
+            </div>
+            <div class="form-group">
+                <label for="HeureDebut">Heure de Début</label>
+                <input type="time" class="form-control" id="HeureDebut" name="HeureDebut" required />
+            </div>
+            <div class="form-group">
+                <label for="HeureFin">Heure de Fin</label>
+                <input type="time" class="form-control" id="HeureFin" name="HeureFin" required />
+            </div>
+            <div class="form-group">
+                <label for="Lieu">Lieu</label>
+                <input type="text" class="form-control" id="Lieu" name="Lieu" />
+            </div>
+            <button type="submit" class="btn btn-primary">Ajouter</button>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Afficher le formulaire d'ajout d'événement
+        function showEventForm(date) {
+            document.getElementById('eventDate').value = date;
+            document.getElementById('eventForm').style.display = 'block';
+        }
+
+        // Masquer le formulaire d'ajout d'événement
+        function hideEventForm() {
+            document.getElementById('eventForm').style.display = 'none';
+        }
+    </script>
+}

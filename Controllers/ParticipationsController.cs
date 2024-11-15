@@ -76,6 +76,7 @@ namespace Stage.Controllers
             ViewData["Entrainements"] = await _context.Entrainements.ToListAsync();
             return View();
         }
+
         // GET: Participations/Edit/5
         public async Task<IActionResult> Edit(int id)
         {
@@ -93,55 +94,25 @@ namespace Stage.Controllers
 
             return View(participation);
         }
+
+        // POST: Participations/ModifierStatut
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, string statut)
+        public async Task<IActionResult> ModifierStatut(int participationId, string StatutParticipation)
         {
-            // Vérification que la participation existe déjà
-            var existingParticipation = await _context.Participations.FirstOrDefaultAsync(p => p.Id == id);
-            if (existingParticipation == null)
+            var participation = await _context.Participations.FindAsync(participationId);
+            if (participation != null)
             {
-                return NotFound();
+                participation.StatutParticipation = StatutParticipation;
+                await _context.SaveChangesAsync();
+
+                // Rediriger vers la page des détails après modification
+                return RedirectToAction("Details", new { id = participationId });
             }
 
-            // Mise à jour du statut de participation
-            if (ModelState.IsValid)
-            {
-                // Mettre à jour uniquement le statut de participation
-                existingParticipation.StatutParticipation = statut;
-
-                try
-                {
-                    // Sauvegarde des modifications dans la base de données
-                    _context.Update(existingParticipation);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!ParticipationExists(existingParticipation.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-
-                // Redirection vers l'index après mise à jour réussie
-                return RedirectToAction(nameof(Index));
-            }
-
-            // Si on arrive ici, il y a un problème avec la validation des données
-            return View(existingParticipation);
+            // Si la participation n'est pas trouvée, retourner une erreur
+            return NotFound();
         }
-
-        private bool ParticipationExists(int id)
-        {
-            return _context.Participations.Any(e => e.Id == id);
-        }
-
-
 
         // GET: Participations/Delete/5
         public async Task<IActionResult> Delete(int id)
@@ -172,6 +143,10 @@ namespace Stage.Controllers
             }
             return RedirectToAction(nameof(Index));
         }
-        
+
+        private bool ParticipationExists(int id)
+        {
+            return _context.Participations.Any(e => e.Id == id);
+        }
     }
 }

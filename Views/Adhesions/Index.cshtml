@@ -1,0 +1,63 @@
+﻿@model IEnumerable<Stage.Models.Adhesion>
+
+@{
+    ViewData["Title"] = "Liste des Adhésions";
+}
+
+<div class="container mt-5">
+    <h1 class="text-center" style="font-weight: 600; color: #333;">Liste des Adhésions</h1>
+
+    <!-- Bouton d'ajout d'adhésion -->
+    <div class="d-flex justify-content-end mb-4">
+        <a asp-action="Create" class="btn btn-primary btn-lg shadow-sm">
+            <i class="fas fa-plus-circle"></i> Ajouter une Adhésion
+        </a>
+    </div>
+
+    <!-- Tableau des adhésions -->
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <table class="table table-striped table-hover">
+                <thead class="thead-dark">
+                    <tr>
+                        <th scope="col">Membre</th>
+                        <th scope="col">Type d'Abonnement</th>
+                        <th scope="col">Montant</th>
+                        <th scope="col">Date de Début</th>
+                        <th scope="col">Date de Fin</th>
+                        <th scope="col">Statut</th>
+                        <th scope="col" class="text-center">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var adhesion in Model)
+                    {
+                        <tr>
+                            <td>@adhesion.Membre.Nom</td>
+                            <td>@adhesion.TypeAbonnement</td>
+                            <td>@adhesion.Montant.ToString("C")</td>
+                            <td>@adhesion.DateDebut.ToString("dd MMM yyyy")</td>
+                            <td>@adhesion.DateFin.ToString("dd MMM yyyy")</td>
+                            <td>@adhesion.Statut</td>
+                            <td class="text-center">
+                                <a asp-action="Details" asp-route-id="@adhesion.Id" class="btn btn-info btn-sm">
+                                    <i class="fas fa-info-circle"></i> Détails
+                                </a>
+                                <a asp-action="Edit" asp-route-id="@adhesion.Id" class="btn btn-warning btn-sm">
+                                    <i class="fas fa-edit"></i> Modifier
+                                </a>
+                                <a asp-action="Delete" asp-route-id="@adhesion.Id" class="btn btn-danger btn-sm">
+                                    <i class="fas fa-trash-alt"></i> Supprimer
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+}
