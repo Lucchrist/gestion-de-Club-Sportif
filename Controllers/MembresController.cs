@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using Stage.Data;
 using Stage.Models;
 using Stage.Services;
@@ -14,11 +15,13 @@ namespace Stage.Controllers
     {
         private readonly ClubSportifDbContext _context;
         private readonly EmailService _emailService;
+        private readonly ILogger<MembresController> _logger;
 
-        public MembresController(ClubSportifDbContext context, EmailService emailService)
+        public MembresController(ClubSportifDbContext context, EmailService emailService, ILogger<MembresController> logger)
         {
             _context = context;
             _emailService = emailService;
+            _logger = logger;
         }
 
         // GET: Membres
@@ -32,7 +35,7 @@ namespace Stage.Controllers
         public async Task<IActionResult> VerifierEtEnvoyerEmails()
         {
             var membresExpirés = await _context.Membres
-                .Where(m => m.StatutAdhesion.ToLower() == "expire") // Vérifie le statut
+                .Where(m => m.StatutAdhesion.ToLowerInvariant() == "expire") // Vérifie le statut
                 .ToListAsync();
 
             int emailsEnvoyes = 0;
@@ -40,26 +43,34 @@ namespace Stage.Controllers
 
             foreach (var membre in membresExpirés)
             {
+                if (string.IsNullOrEmpty(membre.Email))
+                {
+                    _logger.LogWarning($"Membre {membre.Nom} n'a pas d'email enregistré. Email non envoyé.");
+                    emailsEchoues++;
+                    continue;
+                }
+
                 var sujet = "Votre adhésion a expiré";
                 var corps = $@"
-             <p>Bonjour {membre.Nom},</p>
-                        <p>Nous vous informons que votre adhésion au club est actuellement <strong>expirée</strong>.</p>
-                        <p>Pour continuer à bénéficier de nos services, nous vous invitons à renouveler votre abonnement :</p>
-                        <ul>
-                            <li><strong>Abonnement mensuel :</strong> 30$</li>
-                            <li><strong>Abonnement annuel :</strong> 300$</li>
-                        </ul>
-                        <p>Rendez-vous sur votre espace membre pour effectuer le renouvellement.</p>
-                        <p>Cordialement,<br>ClubMaster</p>";
+                    <p>Bonjour {membre.Nom},</p>
+                    <p>Nous vous informons que votre adhésion au club est actuellement <strong>expirée</strong>.</p>
+                    <p>Pour continuer à bénéficier de nos services, nous vous invitons à renouveler votre abonnement :</p>
+                    <ul>
+                        <li><strong>Abonnement mensuel :</strong> 30$</li>
+                        <li><strong>Abonnement annuel :</strong> 300$</li>
+                    </ul>
+                    <p>Rendez-vous sur votre espace membre pour effectuer le renouvellement.</p>
+                    <p>Cordialement,<br>ClubMaster</p>";
 
                 try
                 {
                     await _emailService.SendEmailAsync(membre.Email, sujet, corps);
+                    _logger.LogInformation($"Email envoyé avec succès à {membre.Email} pour le membre {membre.Nom}.");
                     emailsEnvoyes++;
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine($"Erreur lors de l'envoi de l'email à {membre.Email} : {ex.Message}");
+                    _logger.LogError(ex, $"Erreur lors de l'envoi de l'email à {membre.Email} pour le membre {membre.Nom}.");
                     emailsEchoues++;
                 }
             }
@@ -67,7 +78,6 @@ namespace Stage.Controllers
             TempData["Message"] = $"Emails envoyés : {emailsEnvoyes}, Échecs : {emailsEchoues}";
             return RedirectToAction(nameof(Index));
         }
-
 
         // GET: Membres/Details/5
         public async Task<IActionResult> Details(int? id)
@@ -162,8 +172,6 @@ namespace Stage.Controllers
             return View(membre);
         }
 
-        
-       
         // GET: Membres/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
@@ -172,8 +180,7 @@ namespace Stage.Controllers
                 return NotFound();
             }
 
-            var membre = await _context.Membres
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var membre = await _context.Membres.FirstOrDefaultAsync(m => m.Id == id);
             if (membre == null)
             {
                 return NotFound();

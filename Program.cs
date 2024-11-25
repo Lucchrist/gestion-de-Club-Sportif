@@ -14,16 +14,18 @@ namespace Stage
 
             // Configuration Stripe
             builder.Services.Configure<StripeSettings>(builder.Configuration.GetSection("Stripe"));
+            builder.Services.AddSingleton<StripeService>(); // Service Stripe
 
-            // Ajouter le service Stripe
-            builder.Services.AddSingleton<StripeService>();
+            // Ajouter les services hébergés pour les rappels
+            builder.Services.AddHostedService<RappelParticipationService>(); //// Service pour les participations
+
+
+            builder.Services.AddHostedService<RappelMembreService>(); // Service pour les membres avec statut expiré
+           
+           // builder.Services.AddHostedService<EmailTestBackgroundService>(); // Service pour tester les emails
+
+            // Ajouter le service Email
             builder.Services.AddScoped<EmailService>();
-
-
-            // Ajouter le service pour les emails
-            builder.Services.AddTransient<EmailService>();
-            builder.Services.AddScoped<EmailService>();
-
 
             // Ajouter le service pour les abonnements
             builder.Services.AddScoped<AbonnementService>();
@@ -42,7 +44,7 @@ namespace Stage
             {
                 options.IdleTimeout = TimeSpan.FromMinutes(30); // Délai d'inactivité de 30 minutes
                 options.Cookie.HttpOnly = true; // Sécurité des cookies
-                options.Cookie.IsEssential = true;
+                options.Cookie.IsEssential = true; // Essentiel pour la session
             });
 
             // Configurer les options d'authentification

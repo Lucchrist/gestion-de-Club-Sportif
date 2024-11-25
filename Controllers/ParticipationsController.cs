@@ -1,20 +1,23 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
-using Stage.Data;
-using Stage.Models;
+﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
+using Stage.Data;
+using Stage.Models;
 
 namespace Stage.Controllers
 {
     public class ParticipationsController : Controller
     {
         private readonly ClubSportifDbContext _context;
+        private readonly ILogger<ParticipationsController> _logger;
 
-        public ParticipationsController(ClubSportifDbContext context)
+        public ParticipationsController(ClubSportifDbContext context, ILogger<ParticipationsController> logger)
         {
             _context = context;
+            _logger = logger;
         }
 
         // GET: Participations/Index
@@ -28,6 +31,7 @@ namespace Stage.Controllers
                                                 .Include(p => p.Membre)
                                                 .Include(p => p.Entrainement)
                                                 .ToListAsync();
+
             return View(participations);
         }
 
