@@ -12,23 +12,27 @@ namespace Stage
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            // Configuration de Stripe
+            // Configuration Stripe
             builder.Services.Configure<StripeSettings>(builder.Configuration.GetSection("Stripe"));
 
-            // Ajout du service Stripe
+            // Ajouter le service Stripe
             builder.Services.AddSingleton<StripeService>();
+            builder.Services.AddScoped<EmailService>();
 
-            // Service pour les emails
+
+            // Ajouter le service pour les emails
             builder.Services.AddTransient<EmailService>();
+            builder.Services.AddScoped<EmailService>();
 
-            // Service pour les abonnements
+
+            // Ajouter le service pour les abonnements
             builder.Services.AddScoped<AbonnementService>();
 
-            // Ajout du DbContext
+            // Ajouter le DbContext pour la base de données
             builder.Services.AddDbContext<ClubSportifDbContext>(options =>
                 options.UseSqlServer(builder.Configuration.GetConnectionString("ClubSportifDbContext")));
 
-            // Ajouter les services Identity
+            // Ajouter les services Identity pour l'authentification et la gestion des rôles
             builder.Services.AddIdentity<IdentityUser, IdentityRole>()
                 .AddEntityFrameworkStores<ClubSportifDbContext>()
                 .AddDefaultTokenProviders();
@@ -36,19 +40,19 @@ namespace Stage
             // Configuration des sessions
             builder.Services.AddSession(options =>
             {
-                options.IdleTimeout = TimeSpan.FromMinutes(30);
-                options.Cookie.HttpOnly = true;
+                options.IdleTimeout = TimeSpan.FromMinutes(30); // Délai d'inactivité de 30 minutes
+                options.Cookie.HttpOnly = true; // Sécurité des cookies
                 options.Cookie.IsEssential = true;
             });
 
-            // Configurer les paramètres d'authentification (ex. : redirection vers la page de connexion)
+            // Configurer les options d'authentification
             builder.Services.ConfigureApplicationCookie(options =>
             {
-                options.LoginPath = "/Admin/Login";  // Redirige vers cette page si l'utilisateur n'est pas connecté
-                options.AccessDeniedPath = "/Home/AccessDenied"; // Redirige ici si l'accès est refusé
+                options.LoginPath = "/Admin/Login"; // Redirection vers la page de connexion
+                options.AccessDeniedPath = "/Home/AccessDenied"; // Redirection en cas d'accès refusé
             });
 
-            // Ajout des services de contrôleurs et de vues
+            // Ajouter les services de contrôleurs et vues
             builder.Services.AddControllersWithViews();
 
             var app = builder.Build();
@@ -56,19 +60,19 @@ namespace Stage
             // Configuration du pipeline des requêtes HTTP
             if (!app.Environment.IsDevelopment())
             {
-                app.UseExceptionHandler("/Home/Error");
-                app.UseHsts();
+                app.UseExceptionHandler("/Home/Error"); // Gérer les exceptions en environnement production
+                app.UseHsts(); // Appliquer la politique HSTS pour HTTPS
             }
 
-            app.UseHttpsRedirection();
-            app.UseStaticFiles();
+            app.UseHttpsRedirection(); // Rediriger les requêtes HTTP vers HTTPS
+            app.UseStaticFiles(); // Permettre l'accès aux fichiers statiques
 
-            app.UseRouting();
+            app.UseRouting(); // Configurer le routage
 
             // Utiliser les sessions
             app.UseSession();
 
-            // Utiliser l'authentification et l'autorisation
+            // Ajouter l'authentification et l'autorisation
             app.UseAuthentication();
             app.UseAuthorization();
 
@@ -77,6 +81,7 @@ namespace Stage
                 name: "default",
                 pattern: "{controller=Home}/{action=Index}/{id?}");
 
+            // Lancer l'application
             app.Run();
         }
     }

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
@@ -7,16 +6,19 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Stage.Data;
 using Stage.Models;
+using Stage.Services;
 
 namespace Stage.Controllers
 {
     public class MembresController : Controller
     {
         private readonly ClubSportifDbContext _context;
+        private readonly EmailService _emailService;
 
-        public MembresController(ClubSportifDbContext context)
+        public MembresController(ClubSportifDbContext context, EmailService emailService)
         {
             _context = context;
+            _emailService = emailService;
         }
 
         // GET: Membres
@@ -24,6 +26,48 @@ namespace Stage.Controllers
         {
             return View(await _context.Membres.ToListAsync());
         }
+
+        // Méthode pour vérifier le statut et envoyer des emails
+        [HttpPost]
+        public async Task<IActionResult> VerifierEtEnvoyerEmails()
+        {
+            var membresExpirés = await _context.Membres
+                .Where(m => m.StatutAdhesion.ToLower() == "expire") // Vérifie le statut
+                .ToListAsync();
+
+            int emailsEnvoyes = 0;
+            int emailsEchoues = 0;
+
+            foreach (var membre in membresExpirés)
+            {
+                var sujet = "Votre adhésion a expiré";
+                var corps = $@"
+             <p>Bonjour {membre.Nom},</p>
+                        <p>Nous vous informons que votre adhésion au club est actuellement <strong>expirée</strong>.</p>
+                        <p>Pour continuer à bénéficier de nos services, nous vous invitons à renouveler votre abonnement :</p>
+                        <ul>
+                            <li><strong>Abonnement mensuel :</strong> 30$</li>
+                            <li><strong>Abonnement annuel :</strong> 300$</li>
+                        </ul>
+                        <p>Rendez-vous sur votre espace membre pour effectuer le renouvellement.</p>
+                        <p>Cordialement,<br>ClubMaster</p>";
+
+                try
+                {
+                    await _emailService.SendEmailAsync(membre.Email, sujet, corps);
+                    emailsEnvoyes++;
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Erreur lors de l'envoi de l'email à {membre.Email} : {ex.Message}");
+                    emailsEchoues++;
+                }
+            }
+
+            TempData["Message"] = $"Emails envoyés : {emailsEnvoyes}, Échecs : {emailsEchoues}";
+            return RedirectToAction(nameof(Index));
+        }
+
 
         // GET: Membres/Details/5
         public async Task<IActionResult> Details(int? id)
@@ -33,8 +77,7 @@ namespace Stage.Controllers
                 return NotFound();
             }
 
-            var membre = await _context.Membres
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var membre = await _context.Membres.FirstOrDefaultAsync(m => m.Id == id);
             if (membre == null)
             {
                 return NotFound();
@@ -46,7 +89,6 @@ namespace Stage.Controllers
         // GET: Membres/Create
         public IActionResult Create()
         {
-            // Créer une liste déroulante pour le statut d'adhésion
             ViewBag.StatutAdhesionList = new SelectList(new List<string> { "Actif", "Expire" });
             return View();
         }
@@ -62,7 +104,7 @@ namespace Stage.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            // Si la validation échoue, on renvoie la liste déroulante avec les options
+
             ViewBag.StatutAdhesionList = new SelectList(new List<string> { "Actif", "Expire" });
             return View(membre);
         }
@@ -81,7 +123,6 @@ namespace Stage.Controllers
                 return NotFound();
             }
 
-            // Liste déroulante pour le statut d'adhésion
             ViewBag.StatutAdhesionList = new SelectList(new List<string> { "Actif", "Expire" }, membre.StatutAdhesion);
             return View(membre);
         }
@@ -117,13 +158,12 @@ namespace Stage.Controllers
                 return RedirectToAction(nameof(Index));
             }
 
-            // Si la validation échoue, on renvoie la liste déroulante avec la sélection actuelle
             ViewBag.StatutAdhesionList = new SelectList(new List<string> { "Actif", "Expire" }, membre.StatutAdhesion);
             return View(membre);
         }
-        
-    
 
+        
+       
         // GET: Membres/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
@@ -157,6 +197,7 @@ namespace Stage.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+        // Vérifie si un membre existe
         private bool MembreExists(int id)
         {
             return _context.Membres.Any(e => e.Id == id);

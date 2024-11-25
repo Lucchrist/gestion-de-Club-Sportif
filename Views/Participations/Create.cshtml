@@ -8,14 +8,17 @@
     <h2 class="display-6 text-center mb-4">Create Participation</h2>
 
     <form asp-action="Create" method="post" class="shadow-lg p-4 bg-white rounded">
-        <!-- Sélection du membre -->
+        <!-- Sélection du membre avec statut "Actif" -->
         <div class="form-group mb-4">
             <label for="membreId" class="form-label">Select Membre</label>
             <select id="membreId" name="membreId" class="form-control form-select">
                 <option disabled selected>Select a member</option>
                 @foreach (var membre in ViewData["Membres"] as List<Stage.Models.Membre>)
                 {
-                    <option value="@membre.Id">@membre.Nom @membre.Nom</option>
+                    @if (membre.StatutAdhesion.ToLower() == "actif")
+                    {
+                        <option value="@membre.Id">@membre.Nom</option>
+                    }
                 }
             </select>
         </div>

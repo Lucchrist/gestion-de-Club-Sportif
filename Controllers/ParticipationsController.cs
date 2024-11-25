@@ -20,11 +20,30 @@ namespace Stage.Controllers
         // GET: Participations/Index
         public async Task<IActionResult> Index()
         {
+            // Supprimer les participations des membres expirés
+            await SupprimerParticipationsMembresExpirés();
+
+            // Charger les participations valides
             var participations = await _context.Participations
                                                 .Include(p => p.Membre)
                                                 .Include(p => p.Entrainement)
                                                 .ToListAsync();
             return View(participations);
+        }
+
+        // Méthode privée pour supprimer les participations des membres expirés
+        private async Task SupprimerParticipationsMembresExpirés()
+        {
+            var participationsExpirées = await _context.Participations
+                .Include(p => p.Membre)
+                .Where(p => p.Membre.StatutAdhesion.ToLower() == "expire")
+                .ToListAsync();
+
+            if (participationsExpirées.Any())
+            {
+                _context.Participations.RemoveRange(participationsExpirées);
+                await _context.SaveChangesAsync();
+            }
         }
 
         // GET: Participations/Details/5
@@ -56,6 +75,14 @@ namespace Stage.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(int membreId, int[] entrainementIds, string statut)
         {
+            // Vérifier si le membre est expiré
+            var membre = await _context.Membres.FindAsync(membreId);
+            if (membre == null || membre.StatutAdhesion.ToLower() == "expire")
+            {
+                TempData["Message"] = "Impossible d'ajouter des participations pour un membre avec un statut 'Expire'.";
+                return RedirectToAction(nameof(Index));
+            }
+
             if (ModelState.IsValid)
             {
                 foreach (var entrainementId in entrainementIds)
@@ -89,28 +116,24 @@ namespace Stage.Controllers
                 return NotFound();
             }
 
-            // Only passing the necessary data (Membre and StatutParticipation)
             ViewBag.MembreName = participation.Membre.Nom;
-
             return View(participation);
         }
 
         // POST: Participations/ModifierStatut
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> ModifierStatut(int participationId, string StatutParticipation)
+        public async Task<IActionResult> ModifierStatut(int participationId, string statutParticipation)
         {
             var participation = await _context.Participations.FindAsync(participationId);
             if (participation != null)
             {
-                participation.StatutParticipation = StatutParticipation;
+                participation.StatutParticipation = statutParticipation;
                 await _context.SaveChangesAsync();
 
-                // Rediriger vers la page des détails après modification
                 return RedirectToAction("Details", new { id = participationId });
             }
 
-            // Si la participation n'est pas trouvée, retourner une erreur
             return NotFound();
         }
 

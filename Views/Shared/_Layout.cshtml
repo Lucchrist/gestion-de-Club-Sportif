@@ -32,9 +32,7 @@
                         <li class="nav-item">
                             <a class="nav-link" href="/Membres" style="color: #fff;">Gestion des Membres</a>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="/Adhesions" style="color: #fff;">Gestion des Abonnements</a>
-                        </li>
+                        
                         <li class="nav-item">
                             <a class="nav-link" href="/Entrainements" style="color: #fff;">Gestion des événements </a>
                         </li>
@@ -48,6 +46,13 @@
                         <li class="nav-item">
                             <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Privacy" style="color: #fff;">Confidentialité</a>
                         </li>
+                        <form asp-action="DeclencherRappels" method="post">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-bell"></i> Envoyer les rappels 24h
+                            </button>
+                        </form>
+
+
                         
                     </ul>
                 </div>
