@@ -1,120 +1,101 @@
 ﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Stage.Data;
 using Stage.Models;
-using Stage.Services;
 
 namespace Stage.Controllers
 {
     public class AbonnementsController : Controller
     {
         private readonly ClubSportifDbContext _context;
-        private readonly AbonnementService _abonnementService;
 
-        public AbonnementsController(ClubSportifDbContext context, AbonnementService abonnementService)
+        public AbonnementsController(ClubSportifDbContext context)
         {
             _context = context;
-            _abonnementService = abonnementService;
         }
 
-        // GET: Abonnements/Create
-        public IActionResult Create()
-        {
-            ViewData["MembreId"] = new SelectList(_context.Membres, "Id", "Email");
-            return View();
-        }
-
-        // POST: Abonnements/Create
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(Abonnement abonnement)
-        {
-            if (ModelState.IsValid)
-            {
-                // Redirige vers PayPal pour le paiement
-                var approvalUrl = _abonnementService.EffectuerPaiementPayPal(abonnement.Montant, abonnement.TypeAbonnement);
-                TempData["Abonnement"] = abonnement;
-                return Redirect(approvalUrl);
-            }
-            ViewData["MembreId"] = new SelectList(_context.Membres, "Id", "Email", abonnement.MembreId);
-            return View(abonnement);
-        }
-
-        // Action de retour après le paiement PayPal
-        public async Task<IActionResult> CreateConfirmation(string paymentId, string token, string PayerID)
-        {
-            // Récupération de l'abonnement depuis TempData
-            var abonnement = TempData["Abonnement"] as Abonnement;
-            if (abonnement == null) return RedirectToAction("Create");
-
-            // Vérifier l'état du paiement
-            var payment = _abonnementService.ValiderPaiementPayPal(paymentId, PayerID);
-            if (payment.state== "approved")
-            {
-                // Enregistrer l’abonnement
-                abonnement.Statut = "Payé";
-                _context.Add(abonnement);
-                await _context.SaveChangesAsync();
-
-                // Envoyer l'email de confirmation
-                var membre = await _context.Membres.FindAsync(abonnement.MembreId);
-                if (membre != null)
-                {
-                    _abonnementService.EnvoyerEmailConfirmationPaiement(membre, abonnement.Montant);
-                }
-
-                TempData["Message"] = "Abonnement créé avec succès.";
-                return RedirectToAction(nameof(Index));
-            }
-            else
-            {
-                TempData["Error"] = "Le paiement a échoué. Veuillez réessayer.";
-                return RedirectToAction(nameof(Create));
-            }
-        }
-
-        // GET: Abonnements
+        // Vue : Afficher tous les abonnements
         public async Task<IActionResult> Index()
         {
-            var abonnements = await _context.Abonnements.Include(c => c.Membre).ToListAsync();
+            var abonnements = await _context.Abonnements
+                .Include(a => a.Membre)
+                .ToListAsync();
             return View(abonnements);
         }
 
-        // GET: Abonnements/Details/5
-        public async Task<IActionResult> Details(int? id)
+        // Vue : Détails d'un abonnement
+        public async Task<IActionResult> Details(int id)
         {
-            if (!id.HasValue) return NotFound();
-
             var abonnement = await _context.Abonnements
-                .Include(c => c.Membre)
-                .FirstOrDefaultAsync(m => m.Id == id);
+                .Include(a => a.Membre)
+                .FirstOrDefaultAsync(a => a.Id == id);
 
-            if (abonnement == null) return NotFound();
+            if (abonnement == null)
+            {
+                return NotFound();
+            }
 
             return View(abonnement);
         }
 
-        // GET: Abonnements/Edit/5
-        public async Task<IActionResult> Edit(int? id)
+        // Vue : Ajouter un abonnement
+        public IActionResult Create()
         {
-            if (!id.HasValue) return NotFound();
-
-            var abonnement = await _context.Abonnements.FindAsync(id);
-            if (abonnement == null) return NotFound();
-
-            ViewData["MembreId"] = new SelectList(_context.Membres, "Id", "Email", abonnement.MembreId);
-            return View(abonnement);
+            ViewData["Membres"] = _context.Membres.ToList();
+            return View();
         }
 
-        // POST: Abonnements/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, Abonnement abonnement)
+        public async Task<IActionResult> Create([Bind("MembreId,TypeAbonnement,Montant,DateFin,Commentaire")] Abonnement abonnement)
         {
-            if (id != abonnement.Id) return NotFound();
+            if (ModelState.IsValid)
+            {
+                abonnement.DateDebut = DateTime.Now;
+                abonnement.Statut = "Actif";
+
+                _context.Abonnements.Add(abonnement);
+
+                // Mettre à jour le statut du membre
+                var membre = await _context.Membres.FindAsync(abonnement.MembreId);
+                if (membre != null)
+                {
+                    membre.StatutAdhesion = "Actif";
+                    _context.Membres.Update(membre);
+                }
+
+                await _context.SaveChangesAsync();
+                return RedirectToAction(nameof(Index));
+            }
+
+            ViewData["Membres"] = _context.Membres.ToList();
+            return View(abonnement);
+        }
+
+        // Vue : Modifier un abonnement
+        public async Task<IActionResult> Edit(int id)
+        {
+            var abonnement = await _context.Abonnements.FindAsync(id);
+            if (abonnement == null)
+            {
+                return NotFound();
+            }
+
+            ViewData["Membres"] = _context.Membres.ToList();
+            return View(abonnement);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(int id, [Bind("Id,MembreId,TypeAbonnement,Montant,Statut,DateFin,Commentaire")] Abonnement abonnement)
+        {
+            if (id != abonnement.Id)
+            {
+                return BadRequest();
+            }
 
             if (ModelState.IsValid)
             {
@@ -122,31 +103,110 @@ namespace Stage.Controllers
                 {
                     _context.Update(abonnement);
                     await _context.SaveChangesAsync();
-
-                    // Envoi de l'email de confirmation de paiement si le statut est "Payé"
-                    var membre = await _context.Membres.FindAsync(abonnement.MembreId);
-                    if (membre != null && abonnement.Statut == "Payé")
-                    {
-                        _abonnementService.EnvoyerEmailConfirmationPaiement(membre, abonnement.Montant);
-                    }
-
-                    TempData["Message"] = "Abonnement mis à jour avec succès.";
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!AbonnementExists(abonnement.Id)) return NotFound();
+                    if (!_context.Abonnements.Any(e => e.Id == id))
+                    {
+                        return NotFound();
+                    }
                     throw;
                 }
+
                 return RedirectToAction(nameof(Index));
             }
 
-            ViewData["MembreId"] = new SelectList(_context.Membres, "Id", "Email", abonnement.MembreId);
+            ViewData["Membres"] = _context.Membres.ToList();
             return View(abonnement);
         }
 
-        private bool AbonnementExists(int id)
+        // Vue : Supprimer un abonnement
+        public async Task<IActionResult> Delete(int id)
         {
-            return _context.Abonnements.Any(e => e.Id == id);
+            var abonnement = await _context.Abonnements
+                .Include(a => a.Membre)
+                .FirstOrDefaultAsync(a => a.Id == id);
+
+            if (abonnement == null)
+            {
+                return NotFound();
+            }
+
+            return View(abonnement);
+        }
+
+        [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteConfirmed(int id)
+        {
+            var abonnement = await _context.Abonnements.FindAsync(id);
+            if (abonnement != null)
+            {
+                _context.Abonnements.Remove(abonnement);
+                await _context.SaveChangesAsync();
+            }
+
+            return RedirectToAction(nameof(Index));
+        }
+
+        // API : Simuler un paiement
+        [HttpPost("api/pay")]
+          [Produces("application/json")]
+        [Consumes("application/json")]
+       
+        public async Task<IActionResult> Pay([FromBody] dynamic data)
+        {
+            if (data == null || data.MembreId == null || data.Montant == null || data.TypeAbonnement == null)
+            {
+                return BadRequest(new { Message = "Données invalides pour le paiement." });
+            }
+
+            try
+            {
+                int membreId = (int)data.MembreId;
+                decimal montant = (decimal)data.Montant;
+                string typeAbonnement = (string)data.TypeAbonnement;
+
+                var membre = await _context.Membres.FindAsync(membreId);
+                if (membre == null)
+                {
+                    return NotFound(new { Message = "Membre introuvable." });
+                }
+
+                // Créer un nouvel abonnement
+                var abonnement = new Abonnement
+                {
+                    MembreId = membreId,
+                    TypeAbonnement = typeAbonnement,
+                    Montant = montant,
+                    Statut = "Actif",
+                    DateDebut = DateTime.Now,
+                    DateFin = typeAbonnement.ToLower() == "mensuel"
+                        ? DateTime.Now.AddMonths(1)
+                        : typeAbonnement.ToLower() == "annuel"
+                            ? DateTime.Now.AddYears(1)
+                            : null
+                };
+
+                _context.Abonnements.Add(abonnement);
+
+                // Mettre à jour le statut du membre
+                membre.StatutAdhesion = "Actif";
+                _context.Membres.Update(membre);
+
+                await _context.SaveChangesAsync();
+
+                return Ok(new
+                {
+                    Message = "Paiement réussi. Abonnement ajouté.",
+                    AbonnementId = abonnement.Id,
+                    DateFin = abonnement.DateFin
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { Message = "Erreur lors du paiement.", Error = ex.Message });
+            }
         }
     }
 }

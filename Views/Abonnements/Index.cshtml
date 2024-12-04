@@ -1,33 +1,60 @@
 ﻿@model IEnumerable<Stage.Models.Abonnement>
 
-<h2>Liste des Abonnements</h2>
-<table class="table table-striped">
-    <thead>
-        <tr>
-            <th>Membre</th>
-            <th>Type</th>
-            <th>Date de début</th>
-            <th>Date de fin</th>
-            <th>Statut</th>
-            <th>Actions</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var abonnement in Model)
-        {
+@{
+    ViewData["Title"] = "Liste des Abonnements";
+}
+
+<div class="container mt-4">
+    <h1 class="text-center mb-4">Liste des Abonnements</h1>
+
+    <table class="table table-bordered table-striped">
+        <thead class="thead-dark">
             <tr>
-                <td>@abonnement.Membre.Email</td>
-                <td>@abonnement.TypeAbonnement</td>
-                <td>@abonnement.DateDebut.ToShortDateString()</td>
-                <td>@abonnement.DateFin?.ToShortDateString()</td>
-                <td>@abonnement.Statut</td>
-                <td>
-                    <a href="@Url.Action("Edit", new { id = abonnement.Id })" class="btn btn-primary">Modifier</a>
-                    <a href="@Url.Action("Details", new { id = abonnement.Id })" class="btn btn-info">Détails</a>
-                    <a href="@Url.Action("Delete", new { id = abonnement.Id })" class="btn btn-danger">Supprimer</a>
-                </td>
+                <th>#</th>
+                <th>Membre</th>
+                <th>Type d'Abonnement</th>
+                <th>Statut</th>
+                <th>Montant</th>
+                <th>Date de Début</th>
+                <th>Date de Fin</th>
+                <th>Commentaire</th>
+                <th>Actions</th>
             </tr>
-        }
-    </tbody>
-</table>
-<a href="@Url.Action("Create")" class="btn btn-success">Ajouter un Abonnement</a>
+        </thead>
+        <tbody>
+            @if (Model != null && Model.Any())
+            {
+                foreach (var abonnement in Model)
+                {
+                    <tr>
+                        <td>@abonnement.Id</td>
+                        <td>@abonnement.Membre?.Nom</td>
+                        <td>@abonnement.TypeAbonnement</td>
+                        <td class="text-@((abonnement.Statut.ToLower() == "actif") ? "success" : "danger")">
+                            @abonnement.Statut
+                        </td>
+                        <td>@abonnement.Montant.ToString("C")</td>
+                        <td>@abonnement.DateDebut.ToString("dd/MM/yyyy")</td>
+                        <td>@abonnement.DateFin?.ToString("dd/MM/yyyy") ?? "N/A"</td>
+                        <td>@abonnement.Commentaire</td>
+                        <td>
+                            <a href="@Url.Action("Details", "Abonnements", new { id = abonnement.Id })" class="btn btn-info btn-sm">Détails</a>
+                            <a href="@Url.Action("Edit", "Abonnements", new { id = abonnement.Id })" class="btn btn-warning btn-sm">Modifier</a>
+                            <a href="@Url.Action("Delete", "Abonnements", new { id = abonnement.Id })" class="btn btn-danger btn-sm">Supprimer</a>
+                        </td>
+                    </tr>
+                }
+            }
+            else
+            {
+                <tr>
+                    <td colspan="9" class="text-center">Aucun abonnement trouvé.</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <div class="text-center mt-4">
+        <a href="@Url.Action("Create", "Abonnements")" class="btn btn-primary">Ajouter un Abonnement</a>
+    </div>
+</div>

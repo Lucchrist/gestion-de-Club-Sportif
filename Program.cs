@@ -17,18 +17,13 @@ namespace Stage
             builder.Services.AddSingleton<StripeService>(); // Service Stripe
 
             // Ajouter les services hébergés pour les rappels
-            builder.Services.AddHostedService<RappelParticipationService>(); //// Service pour les participations
-
-
+            builder.Services.AddHostedService<RappelParticipationService>(); // Service pour les participations
             builder.Services.AddHostedService<RappelMembreService>(); // Service pour les membres avec statut expiré
-           
-           // builder.Services.AddHostedService<EmailTestBackgroundService>(); // Service pour tester les emails
 
             // Ajouter le service Email
             builder.Services.AddScoped<EmailService>();
 
-            // Ajouter le service pour les abonnements
-            builder.Services.AddScoped<AbonnementService>();
+           
 
             // Ajouter le DbContext pour la base de données
             builder.Services.AddDbContext<ClubSportifDbContext>(options =>
@@ -47,15 +42,22 @@ namespace Stage
                 options.Cookie.IsEssential = true; // Essentiel pour la session
             });
 
-            // Configurer les options d'authentification
-            builder.Services.ConfigureApplicationCookie(options =>
+            // Configurer CORS pour autoriser les requêtes API
+            builder.Services.AddCors(options =>
             {
-                options.LoginPath = "/Admin/Login"; // Redirection vers la page de connexion
-                options.AccessDeniedPath = "/Home/AccessDenied"; // Redirection en cas d'accès refusé
+                options.AddPolicy("AllowAll", policy =>
+                {
+                    policy.AllowAnyOrigin()
+                          .AllowAnyMethod()
+                          .AllowAnyHeader();
+                });
             });
 
             // Ajouter les services de contrôleurs et vues
             builder.Services.AddControllersWithViews();
+
+            // Ajouter les contrôleurs pour les API
+            builder.Services.AddControllers(); // Permet de mapper les API
 
             var app = builder.Build();
 
@@ -71,6 +73,9 @@ namespace Stage
 
             app.UseRouting(); // Configurer le routage
 
+            // Utiliser CORS
+            app.UseCors("AllowAll");
+
             // Utiliser les sessions
             app.UseSession();
 
@@ -82,6 +87,9 @@ namespace Stage
             app.MapControllerRoute(
                 name: "default",
                 pattern: "{controller=Home}/{action=Index}/{id?}");
+
+            // Définir la route pour les API
+            app.MapControllers(); // Permet de mapper les routes API
 
             // Lancer l'application
             app.Run();

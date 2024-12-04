@@ -353,5 +353,21 @@ namespace Stage.Controllers
         {
             return _context.Entrainements.Any(e => e.Id == id);
         }
+
+        // API: Afficher tous les entraînements
+        [HttpGet("api/entrainements")]
+        [Produces("application/json")]
+        public async Task<IActionResult> ApiGetAllEntrainements()
+        {
+            var entrainements = await _context.Entrainements.ToListAsync();
+
+            if (!entrainements.Any())
+            {
+                return NotFound(new { Message = "Aucun entraînement disponible." });
+            }
+
+            return Ok(entrainements);
+        }
+
     }
 }

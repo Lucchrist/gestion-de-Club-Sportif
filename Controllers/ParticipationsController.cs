@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -175,5 +176,87 @@ namespace Stage.Controllers
         {
             return _context.Participations.Any(e => e.Id == id);
         }
+
+
+        [HttpPost("api/participations/add")]
+        [Produces("application/json")]
+        [Consumes("application/json")]
+        public async Task<IActionResult> ApiAddParticipations([FromBody] JsonElement data)
+        {
+            try
+            {
+                // Vérification des propriétés dans le JsonElement
+                if (!data.TryGetProperty("MembreId", out var membreIdElement) || membreIdElement.ValueKind != JsonValueKind.Number ||
+                    !data.TryGetProperty("EntrainementIds", out var entrainementIdsElement) || entrainementIdsElement.ValueKind != JsonValueKind.Array)
+                {
+                    return BadRequest(new { Message = "Données invalides pour l'ajout de participations. Vérifiez MembreId et EntrainementIds." });
+                }
+
+                // Extraction des valeurs
+                int membreId = membreIdElement.GetInt32();
+                var entrainementIds = entrainementIdsElement.EnumerateArray()
+                                                            .Where(e => e.ValueKind == JsonValueKind.Number)
+                                                            .Select(e => e.GetInt32())
+                                                            .ToList();
+
+                if (entrainementIds.Count == 0)
+                {
+                    return BadRequest(new { Message = "La liste des EntrainementIds est vide ou invalide." });
+                }
+
+                // Validation du membre
+                var membre = await _context.Membres.FindAsync(membreId);
+                if (membre == null || membre.StatutAdhesion.ToLower() == "expire")
+                {
+                    return BadRequest(new { Message = "Le membre est introuvable ou son statut est expiré." });
+                }
+
+                // Création des participations
+                foreach (var entrainementId in entrainementIds)
+                {
+                    var participation = new Participation
+                    {
+                        MembreId = membreId,
+                        EntrainementId = entrainementId,
+                        StatutParticipation = "Actif"
+                    };
+                    _context.Participations.Add(participation);
+                }
+
+                await _context.SaveChangesAsync();
+                return Ok(new { Message = "Participations ajoutées avec succès." });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { Message = "Erreur interne du serveur.", Error = ex.Message });
+            }
+        }
+
+
+
+        [HttpDelete("api/participations/{id}/unregister")]
+        [Produces("application/json")]
+        public async Task<IActionResult> ApiUnregisterParticipation(int id)
+        {
+            var participation = await _context.Participations.FindAsync(id);
+
+            if (participation == null)
+            {
+                return NotFound(new { Message = "Participation introuvable." });
+            }
+
+            try
+            {
+                _context.Participations.Remove(participation);
+                await _context.SaveChangesAsync();
+                return Ok(new { Message = "Participation supprimée avec succès." });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { Message = "Erreur lors de la suppression de la participation.", Error = ex.Message });
+            }
+        }
+
+
     }
 }

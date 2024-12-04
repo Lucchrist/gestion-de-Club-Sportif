@@ -32,9 +32,6 @@ namespace Stage.Models
         [DataType(DataType.Date)]
         public DateTime? DateFin { get; set; }
 
-        [StringLength(100)]
-        public string PaypalSubscriptionId { get; set; }
-
         [StringLength(500)]
         public string Commentaire { get; set; }
     }

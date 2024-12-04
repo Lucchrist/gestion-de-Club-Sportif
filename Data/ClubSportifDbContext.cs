@@ -15,8 +15,8 @@ namespace Stage.Data
         public DbSet<Entrainement> Entrainements { get; set; }
         public DbSet<Participation> Participations { get; set; }
         public DbSet<Statistique> Statistiques { get; set; }
-        public DbSet<User> Users { get; set; }
-        
+     
+
         public DbSet<Abonnement> Abonnements { get; set; }
 
         public DbSet<Adhesion> Adhesions { get; set; }
@@ -25,8 +25,7 @@ namespace Stage.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            // Configuration de la clé primaire pour User
-            modelBuilder.Entity<User>().HasKey(a => a.Id);
+           
 
             // Relation entre Membre et Participation
             modelBuilder.Entity<Participation>()
